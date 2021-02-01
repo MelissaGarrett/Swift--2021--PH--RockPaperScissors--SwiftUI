@@ -11,13 +11,13 @@ struct ContentView: View {
     let choices = ["ROCK", "PAPER", "SCISSORS"]
     let outcomes = ["LOSE", "WIN"]
     
-    private enum Choices: String, CaseIterable {
+    enum Choices: String, CaseIterable {
         case ROCK = "ROCK"
         case PAPER = "PAPER"
         case SCISSORS = "SCISSORS"
     }
 
-    private enum Outcomes: String {
+    enum Outcomes: String {
         case LOSE = "LOSE"
         case WIN = "WIN"
     }
@@ -36,8 +36,8 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if isGameOver {
-                    Text("Player's Score: \(playerScore)")
+                if !isGameOver {
+                    Text("Round \(numRound)")
                         .font(.title)
                         .foregroundColor(.green)
                         .padding(50)
@@ -46,7 +46,6 @@ struct ContentView: View {
                         .font(.title)
                         .foregroundColor(.green)
                         .padding(50)
-                        .hidden()
                 }
                 
                 HStack(spacing: 0) {
@@ -99,14 +98,18 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 50)
                 
-                if gameHasStarted {
+                if gameHasStarted && isGameOver == false {
                     if playerWonRound {
                         Text("You won this round!")
                             .font(.title)
                     } else {
-                        Text("Sorry, better luck next time.")
+                        Text("Sorry, you lost this round.")
                             .font(.title)
                     }
+                } else if isGameOver == true {
+                    Text("GAME OVER!")
+                        .font(.title)
+                        .foregroundColor(.red)
                 }
                 
                 Spacer() // to move everything up
@@ -116,7 +119,7 @@ struct ContentView: View {
         }
     }
     
-    private func checkTappedButton(userChoice: Choices) {
+    func checkTappedButton(userChoice: Choices) {
         gameHasStarted = true
         
         switch (choices[appChoice]) {
@@ -154,15 +157,18 @@ struct ContentView: View {
             playerScore -= 1
         }
         
-//        checkForEndOfGame()
-//
-//        func checkForEndOfGame() {
-//            if numRound > TOTAL_ROUNDS {
-//                isGameOver = true
-//            } else {
-//                numRound += 1
-//            }
-//        }
+        checkForEndOfGame()
+    }
+    
+    func checkForEndOfGame() {
+        if numRound >= TOTAL_ROUNDS {
+            isGameOver = true
+        } else {
+            numRound += 1
+            
+            appChoice = Int.random(in: 0 ..< 3)
+            appOutcome = Int.random(in: 0 ..< 2)
+        }
     }
 }
 
